@@ -1,16 +1,29 @@
-# This is a sample Python script.
+import os
+import traceback
 
-# Press Mayús+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from gen import gen_code
+from imports_installer import install_and_exec
+from saver import save_code
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+while True:
+    request = input(">>> ").strip().lower()
+    if request == "exit" or request == "salir":
+        break
+    if len(request) == 0:
+        continue
+    if request == "clear" or request == "limpiar" or request == "cls":
+        os.system("cls" if os.name == "nt" else "clear")
+        continue
+    if request == "open":
+        # open current dir in explorer
+        os.system(f"start {'.' if os.name == 'nt' else '.'}")
+        continue
+    code = gen_code(request)
+    save_code(code)
+    try:
+        exec(code)
+    except ImportError as e:
+        missing_module = str(e).split("'")[1]  # Obtiene el nombre del módulo entre comillas
+        install_and_exec(missing_module, code)
+    except Exception as e:
+        traceback.print_exc()  # Mostrar el traceback del error
